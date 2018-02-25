@@ -14,17 +14,8 @@ def constant(loop1, loop2, loop3):
             print('loop_b not passed')
     else:
         print('loop_a not passed')
-    
-#print([
-#    loop_a[0] == loop_b[14],
-#    loop_a[6] == loop_b[8],
-#    loop_a[1] == loop_c[13],
-#    loop_a[5] == loop_c[9],
-#    loop_b[0] == loop_c[14],
-#    loop_b[6] == loop_c[8]
-#    ])
 
-def ab_initio(loop1, loop2):
+def step1(loop1, loop2):
     print('Performing validation between knot 1 and knot 2 ...')
     for i in range(0, 16):
         for j in range (0, 16):
@@ -34,44 +25,54 @@ def ab_initio(loop1, loop2):
                 if loop1[ie] == loop2[je]:
                     print ('Element A0-B14 :',loop1[i],'(',i,'),',loop2[j],'(',j,')')
                     print ('Element A6-B8 :',loop1[ie],'(',ie,'),',loop2[je],'(',je,')')
-                    
+                    print ()
                     return (loop1[i],i,loop2[j],j,loop1[ie],ie,loop2[je],je)
+    return None
 
-def validate(loop1,loop2,index):
+def step2(loop1,loop2,index):
     print('Performing validation between knot1 and knot 3 ...')
-    loc1 = index+1 if index<15 else 0
-    loc2 = index+5 if index<11 else index-11
-    print (loc1,loc2)
+    loc1 = index+1 if index+1<16 else 0
+    loc2 = index+5 if index+5<16 else index-11
     for i in range(0, 16):
         if loop1[loc1] == loop2[i]:
-            print (i)
             ie = i + 12 if i < 4 else i - 4
             if loop1[loc2] == loop2[ie]:
-                print ('Second couple:',loop1[loc1],'(',loc1,'),',loop2[i],'(',i,')')
-                print ('Third couple:',loop1[loc2],'(',loc2,'),',loop2[ie],'(',ie,')')
-                return (loop1[loc1],loc1,loop2[i],i,loop1[loc2],loc2,loop2[ie],ie)
+                print ('Element A1-C13 :',loop1[loc1],'(',loc1,'),',loop2[i],'(',i,')')
+                print ('Element A5-C9 :',loop1[loc2],'(',loc2,'),',loop2[ie],'(',ie,')')
+                print ()
+                return (loop1[loc1], loc1, loop2[i], i, loop1[loc2], loc2, loop2[ie], ie)
+    return None
                 
-def validate2(loop1,loop2,index):
+def step3(loop1,loop2,index):
     print('Performing validation between knot2 and knot 3 ...')
-    loc1 = index-1 if index>0 else 15
-    loc2 = index+5 if index<11 else index-11
-    print (loc1,loc2)
+    loc1 = index-1 if index-1>0 else 15
+    loc2 = index+5 if index+5<16 else index-11
     for i in range(0, 16):
         if loop1[loc1] == loop2[i]:
-            print (i)
             ie = i - 6 if i > 5 else i +11
             if loop1[loc2] == loop2[ie]:
-                print ('Second couple:',loop1[loc1],'(',loc1,'),',loop2[i],'(',i,')')
-                print ('Third couple:',loop1[loc2],'(',loc2,'),',loop2[ie],'(',ie,')')
-                return (loop1[loc1],loc1,loop2[i],i,loop1[loc2],loc2,loop2[ie],ie)
+                print ('Element C8-B6 :',loop1[loc1],'(',loc1,'),',loop2[i],'(',i,')')
+                print ('Element C14-B0 :',loop1[loc2],'(',loc2,'),',loop2[ie],'(',ie,')')
+                print ()
+                return (loop1[loc1], loc1, loop2[i], i, loop1[loc2], loc2, loop2[ie], ie)
+    return None
 
 def control(loop1,loop2,loop3):
-    match1 = ab_initio(loop1,loop2)
-    match2 = validate(loop1,loop3,match1[1])
-    match3 = validate2(loop3,loop2,match2[7])
+    match1 = step1(loop1, loop2)
+    if match1 != None:
+        match2 = step2(loop1, loop3, match1[1])
+        if match2 != None:
+            match3 = step3(loop3, loop2, match2[7])
+            if match3 != None:
+                print ('Validation completed.')
+            else :
+                print ('Failed in step3')
+        else :
+            print ('Failed in step2')
+    else:
+        print ('Failed in step1')
 
-#def match(loop1,loop2):
-loop = generator.generator()
+loop = generator.getKnots()
 loop_a = loop[0]
 loop_b = loop[1]
 loop_c = loop[2]
